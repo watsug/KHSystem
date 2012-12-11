@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">KHSystem</string>
+    <string name="song_1">P1</string>
+    <string name="song_2">P2</string>
+    <string name="song_3">P3</string>
+    <string name="dialog_fire_missiles">OK 1</string>
+    <string name="cancel">Cancel</string>
+    <string name="sample_text">Sample text</string>
+    <string name="start">START</string>
+    <string name="stop">STOP</string>
+    <string name="fiveMin">5 MIN</string>
+</resources>
