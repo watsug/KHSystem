@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="horizontal"
+        android:background="?android:attr/activatedBackgroundIndicator"
+        xmlns:android="http://schemas.android.com/apk/res/android" android:gravity="right">
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" android:id="@+id/playerFrame" android:background="@color/songsListBackground"
+            android:layout_toLeftOf="@+id/space1">
+        <SeekBar
+                android:layout_width="fill_parent"
+                android:layout_height="30dp"
+                android:id="@+id/seekBar"
+                android:layout_gravity="bottom"/>
+        <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent" android:id="@+id/songsFrame" android:focusableInTouchMode="true">
+            <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:id="@+id/playerKeysFrame"
+                    android:showDividers="middle" android:orientation="vertical">
+                <FrameLayout
+                        android:layout_width="150dp"
+                        android:layout_height="250dp" android:id="@+id/songButtonsFrame"
+                        android:layout_gravity="right|top">
+                    <Button
+                            android:layout_width="140dp"
+                            android:layout_height="80dp"
+                            android:text="@string/song_1"
+                            android:id="@+id/btnSong1"
+                            android:textSize="30dp"
+                            android:layout_alignParentLeft="false"
+                            android:layout_alignTop="@+id/listView" android:layout_gravity="center|top"/>
+                    <Button
+                            android:layout_width="140dp"
+                            android:layout_height="80dp"
+                            android:text="@string/song_2"
+                            android:id="@+id/btnSong2"
+                            android:textSize="30dp"
+                            android:layout_alignLeft="@+id/btnSong1" android:layout_below="@+id/btnSong1"
+                            android:layout_gravity="center"/>
+                    <Button
+                            android:layout_width="140dp"
+                            android:layout_height="80dp"
+                            android:text="@string/song_3"
+                            android:id="@+id/btnSong3"
+                            android:textSize="30dp"
+                            android:layout_alignLeft="@+id/btnSong1" android:layout_below="@+id/btnSong2"
+                            android:layout_gravity="center|bottom"/>
+                </FrameLayout>
+                <Space
+                        android:layout_width="fill_parent"
+                        android:layout_height="20dp"
+                        android:id="@+id/space"/>
+                <ImageButton
+                        android:layout_width="140dp"
+                        android:layout_height="140dp"
+                        android:id="@+id/btnPlay"
+                        android:layout_alignLeft="@+id/btnSong1" android:layout_alignParentTop="true"
+                        android:layout_alignRight="@+id/btnSong1"
+                        android:layout_alignBottom="@+id/listView"
+                        android:src="@drawable/button_play" android:layout_gravity="center_horizontal"/>
+            </LinearLayout>
+            <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="fill_parent"
+                    android:layout_height="100dp" android:layout_gravity="center_horizontal|top">
+                <TextView
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:text="New Text"
+                        android:id="@+id/textView" android:textSize="50dp" android:gravity="center_vertical|center_horizontal"/>
+                <GridLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent" android:columnCount="3"
+                        android:longClickable="true">
+                    <Button android:text="1" />
+                    <Button android:text="2" />
+                    <Button android:text="3" />
+                    <Button android:text="4" />
+                    <Button android:text="5" />
+                    <Button android:text="6" />
+                    <Button android:text="7" />
+                    <Button android:text="8" />
+                    <Button android:text="9" />
+                    <Button android:text="0" />
+                    <Button android:text="Clr"
+                            android:layout_columnSpan="2" android:gravity="fill"/>
+                </GridLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+    <Space
+            android:layout_width="20dp"
+            android:layout_height="fill_parent"
+            android:id="@+id/space1" android:layout_toLeftOf="@+id/toolsFrame"/>
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="350dp"
+            android:layout_height="fill_parent" android:layout_alignParentRight="true" android:id="@+id/toolsFrame">
+        <FrameLayout
+                android:layout_width="fill_parent"
+                android:layout_height="280dp"
+                android:layout_alignParentTop="false"
+                android:id="@+id/timerFrame" android:layout_alignParentLeft="false"
+                android:layout_toRightOf="@+id/space1" android:background="#0d7842">
+            <Button
+                    android:layout_width="170dp"
+                    android:layout_height="100dp"
+                    android:text="@string/start"
+                    android:id="@+id/btnTimerStart"
+                    android:textSize="40dp"
+                    android:layout_below="@+id/khmTimer" android:layout_alignLeft="@+id/khmTimer"
+                    android:layout_gravity="left|bottom"/>
+            <Button android:layout_width="170dp" android:layout_height="100dp" android:text="@string/fiveMin" android:id="@+id/btnTimer5Min"
+                    android:textSize="40dp"
+                    android:layout_alignRight="@+id/khmTimer" android:layout_alignTop="@+id/btnTimerStart"
+                    android:layout_gravity="right|bottom"/>
+            <Chronometer
+                    android:layout_width="match_parent"
+                    android:layout_height="180dp"
+                    android:id="@+id/khmTimer"
+                    android:gravity="center_vertical|center_horizontal" android:textSize="100dp"
+                    android:enabled="true"
+                    android:text="0:00:01" android:layout_alignParentLeft="true"
+                    android:layout_alignBaseline="@+id/btnSong2" android:layout_gravity="center_horizontal|top"/>
+        </FrameLayout>
+        <FrameLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:id="@+id/elevatorFrame" android:layout_alignLeft="@+id/timerFrame"
+                android:layout_below="@+id/timerFrame" android:background="#5f8308">
+            <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/btnElevatorUp" android:layout_gravity="left|center_vertical"
+                    android:src="@drawable/button_up"/>
+            <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/btnElevatorDown" android:layout_gravity="right|center_vertical"
+                    android:src="@drawable/button_down" android:longClickable="false" android:focusableInTouchMode="false"/>
+        </FrameLayout>
+    </LinearLayout>
+</RelativeLayout>
