@@ -4,41 +4,41 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.res.Resources;
 import android.graphics.Color;
-import android.graphics.Point;
+import android.graphics.Rect;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.util.DisplayMetrics;
-import android.view.Display;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class MyActivity extends Activity {
+public class MyActivity extends Activity implements MediaPlayer.OnCompletionListener {
     private Button btnSong1;
     private Button btnSong2;
     private Button btnSong3;
     private Button btnTimerStart;
     private Button btnTimer5Min;
     private ImageButton btnPlay;
+    private ImageButton btnRepeat;
     private ImageButton btnElevatorUp;
     private ImageButton btnElevatorDown;
     private Chronometer khmTimer;
+    private Chronometer nonstopTimer;
     private TextView timerView;
     ListView songsList;
-    int selectedSongIndex = -1;
-    SongItem selectedSong;
+    SongBase songBase = new SongBase(null);
+    private SongsListAdapter songsAdapter = null;
     SeekBar seekBar;
 
+    private MediaPlayer mediaPlayer = new MediaPlayer();
+    private boolean continousPlay = false;
     private boolean started = false;
     private boolean fiveMinutEnabled = false;
     private Timer myTimer;
@@ -53,22 +53,32 @@ public class MyActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Resources res = this.getResources();
-        DisplayMetrics metrics = res.getDisplayMetrics();
-
-        if (null != metrics) {
-            getWindowManager().getDefaultDisplay().getMetrics(metrics);
-            String tmp = String.format("density: %f\n", metrics.density);
-            tmp = tmp + String.format("densityDpi: %d\n", metrics.densityDpi);
-            tmp = tmp + String.format("widthPixels: %d\n", metrics.widthPixels);
-            tmp = tmp + String.format("scaledDensity: %f\n", metrics.scaledDensity);
-            showError("metrics: \n" + tmp);
-            metrics.density = 1.50f;
-            //metrics.densityDpi = 120;
-            //metrics.scaledDensity = 0.75f;
-            res.updateConfiguration(res.getConfiguration(),metrics);
+        try {
+            if (!KHMConfig.existsKHMDir()) {
+                File path = KHMConfig.getKHMDir();
+                showError(String.format("Data directory not found: %s!",path.getPath()));
+            }
+        } catch (Exception ex) {
+            showError("Internal error: " + ex.toString());
         }
 
+        int densityDpi = KHMConfig.getDensityDPI();
+        if (densityDpi > 0) {
+            Resources res = this.getResources();
+            DisplayMetrics metrics = res.getDisplayMetrics();
+            if (null != metrics) {
+                getWindowManager().getDefaultDisplay().getMetrics(metrics);
+                String tmp = String.format("density: %f\n", metrics.density);
+                tmp = tmp + String.format("densityDpi: %d\n", metrics.densityDpi);
+                tmp = tmp + String.format("widthPixels: %d\n", metrics.widthPixels);
+                tmp = tmp + String.format("scaledDensity: %f\n", metrics.scaledDensity);
+                //showError("metrics: \n" + tmp);
+                metrics.density = (float)densityDpi/160.0f;
+                metrics.densityDpi = densityDpi;
+                metrics.scaledDensity = (float)densityDpi/160.0f;
+                res.updateConfiguration(res.getConfiguration(),metrics);
+            }
+        }
 
         setContentView(R.layout.main);
         setUpView();
@@ -92,7 +102,9 @@ public class MyActivity extends Activity {
             btnTimerStart = (Button)this.findViewById(R.id.btnTimerStart);
             btnTimer5Min = (Button)this.findViewById(R.id.btnTimer5Min);
             khmTimer = (Chronometer)this.findViewById(R.id.khmTimer);
+            nonstopTimer = (Chronometer)this.findViewById(R.id.nonstopTimer);
             btnPlay = (ImageButton)this.findViewById(R.id.btnPlay);
+            btnRepeat = (ImageButton)this.findViewById(R.id.btnRepeat);
             seekBar = (SeekBar)this.findViewById(R.id.seekBar);
             btnElevatorUp = (ImageButton)this.findViewById(R.id.btnElevatorUp);
             btnElevatorDown = (ImageButton)this.findViewById(R.id.btnElevatorDown);
@@ -101,24 +113,26 @@ public class MyActivity extends Activity {
             khmTimer.setBase(SystemClock.elapsedRealtime());
             btnTimer5Min.setText(R.string.fiveMin);
 
+
             try {
-                String tmp = Environment.getExternalStorageDirectory() + "/KHM/snd/";
-                ArrayList<SongItem> FilesInFolder = GetFiles(tmp);
-                songsList.setAdapter(new ArrayAdapter<SongItem>(this,
-                        android.R.layout.simple_list_item_1, FilesInFolder));
+                songBase.build();
+                songsAdapter = new SongsListAdapter(MyActivity.this,R.layout.songs_list,songBase.getSongs());
+                songsList.setAdapter(songsAdapter);
             } catch (Exception ex) {
                 showError("c1" + ex.toString());
             }
 
             try {
-                songsList.setSelector(R.drawable.selector);
+                //songsList.setSelector(R.drawable.selector);
                 songsList.setOnItemClickListener(new ListView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> a, View v, int position, long l) {
-                        selectedSongIndex = position;
+                        SongItem song = null;
                         if (position >= 0) {
-                            selectedSong = (SongItem)a.getItemAtPosition(position);
+                            song = (SongItem)a.getItemAtPosition(position);
                         }
+                        songsAdapter.selectSong(song);
+                        v.refreshDrawableState();
                     }
                 });
             } catch (Exception ex) {
@@ -128,9 +142,8 @@ public class MyActivity extends Activity {
             btnSong1.setLongClickable(true);
             btnSong1.setOnLongClickListener((new View.OnLongClickListener() {
                 public boolean onLongClick(View v) {
-                    if (selectedSongIndex >= 0) {
-                        btnSong1.setText(selectedSongIndex >= 0 ? String.format("%d",selectedSongIndex) : "P1");
-                    }
+                    SongItem song = songsAdapter.getSelectedSong();
+                    btnSong1.setText(null != song ? String.format("%d",song.getNumber()) : "P1");
                     return true;
                 }
             }));
@@ -138,9 +151,7 @@ public class MyActivity extends Activity {
                 public void onClick(View v) {
                     try {
                         int idx = Integer.parseInt(btnSong1.getText().toString());
-                        songsList.setSelection(idx);
-                        songsList.setItemChecked(idx,true);
-                        selectedSong = (SongItem)songsList.getItemAtPosition(idx);
+                        selectSong(idx);
                     } catch (Exception ex) {
                     }
                 }
@@ -148,9 +159,8 @@ public class MyActivity extends Activity {
             btnSong2.setLongClickable(true);
             btnSong2.setOnLongClickListener((new View.OnLongClickListener() {
                 public boolean onLongClick(View v) {
-                    if (selectedSongIndex >= 0) {
-                        btnSong2.setText(selectedSongIndex >= 0 ? String.format("%d",selectedSongIndex) : "P1");
-                    }
+                    SongItem song = songsAdapter.getSelectedSong();
+                    btnSong2.setText(null != song ? String.format("%d",song.getNumber()) : "P2");
                     return true;
                 }
             }));
@@ -158,9 +168,7 @@ public class MyActivity extends Activity {
                 public void onClick(View v) {
                     try {
                         int idx = Integer.parseInt(btnSong2.getText().toString());
-                        songsList.setSelection(idx);
-                        songsList.setItemChecked(idx,true);
-                        selectedSong = (SongItem)songsList.getItemAtPosition(idx);
+                        selectSong(idx);
                     } catch (Exception ex) {
                     }
                 }
@@ -168,9 +176,8 @@ public class MyActivity extends Activity {
             btnSong3.setLongClickable(true);
             btnSong3.setOnLongClickListener((new View.OnLongClickListener() {
                 public boolean onLongClick(View v) {
-                    if (selectedSongIndex >= 0) {
-                        btnSong3.setText(selectedSongIndex >= 0 ? String.format("%d",selectedSongIndex) : "P1");
-                    }
+                    SongItem song = songsAdapter.getSelectedSong();
+                    btnSong3.setText(null != song ? String.format("%d",song.getNumber()) : "P3");
                     return true;
                 }
             }));
@@ -178,10 +185,7 @@ public class MyActivity extends Activity {
                 public void onClick(View v) {
                     try {
                         int idx = Integer.parseInt(btnSong3.getText().toString());
-                        songsList.setSelection(idx);
-
-                        songsList.setItemChecked(idx,true);
-                        selectedSong = (SongItem)songsList.getItemAtPosition(idx);
+                        selectSong(idx);
                     } catch (Exception ex) {
                     }
                 }
@@ -200,15 +204,37 @@ public class MyActivity extends Activity {
                 }
             });
 
+            if (null != nonstopTimer) {
+                nonstopTimer.start();
+                nonstopTimer.setOnLongClickListener((new View.OnLongClickListener() {
+                    public boolean onLongClick(View v) {
+                        try {
+                            nonstopTimer.setBase(SystemClock.elapsedRealtime());
+                        } catch (Exception ex) {
+                        }
+                        return true;
+                    }
+                }));
+            }
+
             btnPlay.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     if (!songStarted) {
                         playSound(true);
                     } else {
                         playSound(false);
+                        continousPlay = false;
                     }
                     songStarted = !songStarted;
                     refreshPlayButton();
+                    refreshRepeatButton();
+                }
+            });
+
+            btnRepeat.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    continousPlay = !continousPlay;
+                    refreshRepeatButton();
                 }
             });
 
@@ -218,11 +244,31 @@ public class MyActivity extends Activity {
                     refresh5MinButton();
                 }
             });
+
+            mediaPlayer.setOnCompletionListener(this);
+
             refreshStartButton();
             refresh5MinButton();
             refreshPlayButton();
+            refreshRepeatButton();
         } catch (Exception ex) {
             showError("c2" + ex.toString());
+        }
+    }
+
+    private void selectSong(int idx) {
+        try {
+            songsList.setSelection(idx-1);
+            SongItem song = (SongItem)songsList.getItemAtPosition(idx-1);
+            songsAdapter.selectSong(song);
+            songsList.invalidateViews();
+            songsList.setSelection(idx-1);
+            View sv = songsList.getSelectedView();
+            if (null != sv) {
+                Rect rect = new Rect(sv.getLeft(), sv.getTop(), sv.getRight(), sv.getBottom());
+                songsList.requestChildRectangleOnScreen(sv, rect, false);
+            }
+        } catch (Exception ex) {
         }
     }
 
@@ -251,12 +297,13 @@ public class MyActivity extends Activity {
         deleteAlert.show();
     }
 
-    private MediaPlayer mediaPlayer = new MediaPlayer();
     private void playSound(boolean play) {
         try {
-            if (play && null != selectedSong) {
+            SongItem song = songsAdapter.getSelectedSong();
+            if (play && null != song) {
+                mediaPlayer.setVolume(0.7f,0.7f);
                 mediaPlayer.reset();
-                mediaPlayer.setDataSource(selectedSong.getPath());
+                mediaPlayer.setDataSource(song.getPath());
                 mediaPlayer.prepare();
                 mediaPlayer.start();
                 startPlayProgressUpdater();
@@ -268,29 +315,8 @@ public class MyActivity extends Activity {
                 }
             }
         } catch (IOException ex) {
+            refreshPlayButton();
         }
-    }
-
-    public ArrayList<SongItem> GetFiles(String DirectoryPath) {
-        ArrayList<SongItem> ret = new ArrayList<SongItem>();
-        try {
-            File f = new File(DirectoryPath);
-            if (null != f) {
-                File[] files = f.listFiles();
-                if (null == files || 0 == files.length)
-                    return ret;
-                else {
-                    for (int i=0; i<files.length; i++)
-                        ret.add(
-                                new SongItem(
-                                        files[i].getName(),
-                                        DirectoryPath + files[i].getName()));
-                }
-            }
-        } catch (Exception ex) {
-            showError(ex.toString());
-        }
-        return ret;
     }
 
     private void refreshPlayButton() {
@@ -304,6 +330,10 @@ public class MyActivity extends Activity {
     private void refresh5MinButton() {
         boolean lighted = fiveMinutEnabled && (1 == (timerCounter % 2));
         btnTimer5Min.setTextColor(lighted ? Color.RED : Color.GRAY);
+    }
+    private void refreshRepeatButton() {
+        boolean lighted = continousPlay && (1 == (timerCounter % 2));
+        btnRepeat.setImageResource(lighted ? R.drawable.repeat : R.drawable.repeat_disabled);
     }
 
     private int timerCounter = 0;
@@ -319,6 +349,17 @@ public class MyActivity extends Activity {
     private Runnable Timer_Tick = new Runnable() {
         public void run() {
             refresh5MinButton();
+            refreshPlayButton();
+            refreshRepeatButton();
         }
     };
+
+    @Override
+    public void onCompletion(MediaPlayer mediaPlayer) {
+        if (continousPlay) {
+            SongItem song = songBase.getNext(songsAdapter.getSelectedSong());
+            selectSong(song.getNumber());
+            playSound(true);
+        }
+    }
 }

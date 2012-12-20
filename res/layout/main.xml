@@ -9,8 +9,8 @@
     <LinearLayout
             android:orientation="vertical"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent" android:id="@+id/playerFrame" android:background="#06396a"
-            android:layout_toLeftOf="@+id/space1">
+            android:layout_height="fill_parent" android:id="@+id/playerFrame" android:background="@color/songsListBackground"
+            android:layout_toLeftOf="@+id/space2">
         <SeekBar
                 android:layout_width="fill_parent"
                 android:layout_height="30dp"
@@ -26,11 +26,11 @@
                     android:showDividers="middle" android:orientation="vertical">
                 <FrameLayout
                         android:layout_width="150dp"
-                        android:layout_height="220dp" android:id="@+id/songButtonsFrame"
+                        android:layout_height="230dp" android:id="@+id/songButtonsFrame"
                         android:layout_gravity="right|top">
                     <Button
                             android:layout_width="140dp"
-                            android:layout_height="70dp"
+                            android:layout_height="75dp"
                             android:text="@string/song_1"
                             android:id="@+id/btnSong1"
                             android:textSize="30dp"
@@ -38,7 +38,7 @@
                             android:layout_alignTop="@+id/listView" android:layout_gravity="center|top"/>
                     <Button
                             android:layout_width="140dp"
-                            android:layout_height="70dp"
+                            android:layout_height="75dp"
                             android:text="@string/song_2"
                             android:id="@+id/btnSong2"
                             android:textSize="30dp"
@@ -46,33 +46,62 @@
                             android:layout_gravity="center"/>
                     <Button
                             android:layout_width="140dp"
-                            android:layout_height="70dp"
+                            android:layout_height="75dp"
                             android:text="@string/song_3"
                             android:id="@+id/btnSong3"
                             android:textSize="30dp"
                             android:layout_alignLeft="@+id/btnSong1" android:layout_below="@+id/btnSong2"
                             android:layout_gravity="center|bottom"/>
                 </FrameLayout>
-                <Space
-                        android:layout_width="fill_parent"
-                        android:layout_height="20dp"
-                        android:id="@+id/space"/>
                 <ImageButton
-                        android:layout_width="fill_parent"
-                        android:layout_height="140dp"
+                        android:layout_width="140dp"
+                        android:layout_height="125dp"
                         android:id="@+id/btnPlay"
                         android:layout_alignLeft="@+id/btnSong1" android:layout_alignParentTop="true"
                         android:layout_alignRight="@+id/btnSong1"
                         android:layout_alignBottom="@+id/listView"
-                        android:src="@drawable/button_play"/>
+                        android:src="@drawable/button_play" android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="10dp" android:longClickable="false"/>
+                <ImageButton
+                        android:layout_width="140dp"
+                        android:layout_height="125dp"
+                        android:id="@+id/btnRepeat" android:layout_gravity="center_horizontal|bottom"
+                        android:src="@drawable/repeat_disabled" android:layout_marginTop="10dp"
+                        />
             </LinearLayout>
             <ListView
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
                     android:id="@+id/listView"
-                    android:choiceMode="singleChoice" android:listSelector="@drawable/selector"/>
+                    android:choiceMode="singleChoice"
+                    android:layout_marginTop="4dp"/>
         </LinearLayout>
     </LinearLayout>
+    <Space
+            android:layout_width="20dp"
+            android:layout_height="fill_parent"
+            android:id="@+id/space2" android:layout_toLeftOf="@+id/recorderFrame"/>
+    <FrameLayout
+            android:layout_width="150dp"
+            android:layout_height="fill_parent" android:background="#999b9a" android:id="@+id/recorderFrame"
+            android:measureAllChildren="false" android:layout_toLeftOf="@+id/space1">
+        <ImageButton
+                android:layout_width="140dp"
+                android:layout_height="140dp"
+                android:id="@+id/folderButton" android:layout_gravity="center_horizontal|bottom"
+                android:src="@drawable/folder_disabled" android:visibility="visible" android:baselineAlignBottom="false"
+                />
+        <ImageButton
+                android:layout_width="140dp"
+                android:layout_height="140dp"
+                android:id="@+id/recordButton" android:layout_gravity="center_horizontal|top"
+                android:src="@drawable/record_disabled"/>
+        <ImageButton
+                android:layout_width="140dp"
+                android:layout_height="140dp"
+                android:id="@+id/pauseRecordButton" android:layout_gravity="center"
+                android:focusableInTouchMode="false" android:src="@drawable/record_stop_disabled"/>
+    </FrameLayout>
     <Space
             android:layout_width="20dp"
             android:layout_height="fill_parent"
@@ -81,9 +110,14 @@
             android:orientation="vertical"
             android:layout_width="350dp"
             android:layout_height="fill_parent" android:layout_alignParentRight="true" android:id="@+id/toolsFrame">
+        <Chronometer
+                android:layout_width="fill_parent"
+                android:layout_height="80dp"
+                android:id="@+id/nonstopTimer" android:textSize="60dp" android:gravity="center_vertical|center_horizontal"
+                android:textColor="#26ff25" android:background="#686868"/>
         <FrameLayout
                 android:layout_width="fill_parent"
-                android:layout_height="280dp"
+                android:layout_height="230dp"
                 android:layout_alignParentTop="false"
                 android:id="@+id/timerFrame" android:layout_alignParentLeft="false"
                 android:layout_toRightOf="@+id/space1" android:background="#0d7842">
@@ -101,7 +135,7 @@
                     android:layout_gravity="right|bottom"/>
             <Chronometer
                     android:layout_width="match_parent"
-                    android:layout_height="180dp"
+                    android:layout_height="130dp"
                     android:id="@+id/khmTimer"
                     android:gravity="center_vertical|center_horizontal" android:textSize="100dp"
                     android:enabled="true"
@@ -114,15 +148,16 @@
                 android:id="@+id/elevatorFrame" android:layout_alignLeft="@+id/timerFrame"
                 android:layout_below="@+id/timerFrame" android:background="#5f8308">
             <ImageButton
-                    android:layout_width="wrap_content"
+                    android:layout_width="170dp"
                     android:layout_height="wrap_content"
                     android:id="@+id/btnElevatorUp" android:layout_gravity="left|center_vertical"
                     android:src="@drawable/button_up"/>
             <ImageButton
-                    android:layout_width="wrap_content"
+                    android:layout_width="170dp"
                     android:layout_height="wrap_content"
                     android:id="@+id/btnElevatorDown" android:layout_gravity="right|center_vertical"
-                    android:src="@drawable/button_down" android:longClickable="false" android:focusableInTouchMode="false"/>
+                    android:src="@drawable/button_down" android:longClickable="false" android:focusableInTouchMode="false"
+                    />
         </FrameLayout>
     </LinearLayout>
 </RelativeLayout>
