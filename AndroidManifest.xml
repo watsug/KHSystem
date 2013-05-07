@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.isonar.KHSystem"
-          android:versionCode="6"
-          android:versionName="1.08">
+          android:versionCode="7"
+          android:versionName="@string/app_version">
     <uses-sdk android:minSdkVersion="15"/>
     <application android:label="@string/app_name" android:icon="@drawable/ic_launcher">
         <activity android:name="MyActivity"
                   android:label="@string/app_name"
                   android:launchMode="singleInstance"
-                  android:screenOrientation="landscape">
+                  android:screenOrientation="sensorLandscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>

@@ -94,6 +94,17 @@ public class MyActivity extends Activity implements MediaPlayer.OnCompletionList
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
+    /**
+     * Called when the activity is destroyed.
+     */
+    @Override
+    public void onDestroy() {
+        if (null != mediaPlayer && mediaPlayer.isPlaying()) {
+            mediaPlayer.stop();
+        }
+        super.onDestroy();
+    }
+
     private void setUpView() {
         try {
             btnSong1 = (Button)this.findViewById(R.id.btnSong1);

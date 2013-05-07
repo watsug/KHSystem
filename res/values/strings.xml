@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">KHSystem</string>
+    <string name="app_name">KHSystem v1.09</string>
+    <string name="app_version">1.09</string>
     <string name="song_1">P1</string>
     <string name="song_2">P2</string>
     <string name="song_3">P3</string>

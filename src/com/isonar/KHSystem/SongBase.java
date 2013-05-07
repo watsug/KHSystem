@@ -5,6 +5,7 @@ import android.os.Environment;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 /**
  * Created with IntelliJ IDEA.
@@ -31,29 +32,46 @@ public class SongBase {
 
     private ArrayList<SongItem> songs = new ArrayList<SongItem>();
     public void build() {
-        for (int i=1; i <= 135; i++) {
+
+        File dir = new File(getFullPath(""));
+        String[] songFiles = dir.list(new SongFilter());
+
+        for (String file: songFiles) {
             try {
-                String name = constructName(i);
-                String filePath = getFullPath(name);
+                String fullName = getFullPath(file);
+                int number = getSongNumber(file);
                 String title = "";
-                if (isFile(filePath)) {
+                if (isFile(fullName)) {
                     try {
                         MediaMetadataRetriever mmr = new MediaMetadataRetriever();
-                        mmr.setDataSource(filePath);
+                        mmr.setDataSource(fullName);
                         title = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
                         title = title.replace("-F", " -");
                     } catch (Exception ex) {
                     }
                     if (null == title || title.isEmpty()) {
-                        title = String.format("%03d",i);
+                        title = String.format("%03d",number);
                     }
-                    songs.add(new SongItem(i,title,filePath));
+                    songs.add(new SongItem(number,title,fullName));
                 } else {
-                    songs.add(new SongItem(i,String.format("%03d",i),""));
+                    songs.add(new SongItem(number,file,""));
                 }
             } catch (Exception ex) {
+                String tmp = ex.toString();
                 // TODO: error handling
             }
+        }
+    }
+
+    private int getSongNumber(String fileName) {
+        try {
+            if (fileName.endsWith(".mp3")) {
+                fileName = fileName.substring(0,fileName.length() - 4);
+            }
+            fileName = fileName.replaceAll("\\D+","");
+            return Integer.parseInt(fileName);
+        } catch (Exception ex) {
+            return -1;
         }
     }
 
