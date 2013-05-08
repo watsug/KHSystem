@@ -2,6 +2,7 @@ package com.isonar.KHSystem;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Rect;
@@ -105,6 +106,22 @@ public class MyActivity extends Activity implements MediaPlayer.OnCompletionList
         super.onDestroy();
     }
 
+    @Override
+    public void onBackPressed() {
+        new AlertDialog.Builder(this)
+                .setMessage(R.string.warnOnExit)
+                .setCancelable(false)
+                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        MyActivity.this.finish();
+                    }
+                })
+                .setNegativeButton(R.string.no, null)
+                .show();
+    }
+
+
+
     private void setUpView() {
         try {
             btnSong1 = (Button)this.findViewById(R.id.btnSong1);
@@ -134,7 +151,6 @@ public class MyActivity extends Activity implements MediaPlayer.OnCompletionList
             }
 
             try {
-                //songsList.setSelector(R.drawable.selector);
                 songsList.setOnItemClickListener(new ListView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> a, View v, int position, long l) {

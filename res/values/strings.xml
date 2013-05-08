@@ -11,4 +11,7 @@
     <string name="start">START</string>
     <string name="stop">STOP</string>
     <string name="fiveMin">5 MIN</string>
+    <string name="warnOnExit">Are you sure you want to exit?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>
