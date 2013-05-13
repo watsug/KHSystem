@@ -283,13 +283,16 @@ public class MyActivity extends Activity implements MediaPlayer.OnCompletionList
         }
     }
 
-    private void selectSong(int idx) {
+    private void selectSong(int songNumber) {
         try {
-            songsList.setSelection(idx-1);
-            SongItem song = (SongItem)songsList.getItemAtPosition(idx-1);
+            SongItem song = songsAdapter.getSong(songNumber);
+            int idx = songsAdapter.getSongIndex(songNumber);
+            if (idx < 0 || null == song) {
+                return;
+            }
             songsAdapter.selectSong(song);
             songsList.invalidateViews();
-            songsList.setSelection(idx-1);
+            songsList.setSelection(idx);
             View sv = songsList.getSelectedView();
             if (null != sv) {
                 Rect rect = new Rect(sv.getLeft(), sv.getTop(), sv.getRight(), sv.getBottom());

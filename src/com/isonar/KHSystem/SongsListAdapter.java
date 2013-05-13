@@ -24,7 +24,7 @@ public class SongsListAdapter extends ArrayAdapter {
     private List<SongItem> items;
     private int selectedSong = -1;
 
-    public SongsListAdapter(Context context, int textViewResourceId , List<SongItem> list )
+    public SongsListAdapter(Context context, int textViewResourceId, List<SongItem> list )
     {
         super(context, textViewResourceId, list);
         mContext = context;
@@ -43,6 +43,24 @@ public class SongsListAdapter extends ArrayAdapter {
                 return;
             }
         }
+    }
+
+    public int getSongIndex(int songNumber) {
+        for (int i=0; i < items.size(); i++) {
+            if (items.get(i).getNumber() == songNumber) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public SongItem getSong(int songNumber) {
+        for (int i=0; i < items.size(); i++) {
+            if (items.get(i).getNumber() == songNumber) {
+                return items.get(i);
+            }
+        }
+        return null;
     }
 
     public SongItem getSelectedSong() {

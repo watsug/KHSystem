@@ -5,6 +5,7 @@ import android.os.Environment;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Scanner;
 
 /**
@@ -40,6 +41,10 @@ public class SongBase {
             try {
                 String fullName = getFullPath(file);
                 int number = getSongNumber(file);
+                if (number <= 0) {
+                    // TODO: report warning!
+                    continue;
+                }
                 String title = "";
                 if (isFile(fullName)) {
                     try {
@@ -61,6 +66,7 @@ public class SongBase {
                 // TODO: error handling
             }
         }
+        Collections.sort(songs, new SongItemComparator());
     }
 
     private int getSongNumber(String fileName) {
