@@ -157,6 +157,7 @@ public class MyActivity extends Activity implements MediaPlayer.OnCompletionList
                         SongItem song = null;
                         if (position >= 0) {
                             song = (SongItem)a.getItemAtPosition(position);
+                            songsList.setItemChecked(position,true);
                         }
                         songsAdapter.selectSong(song);
                         v.refreshDrawableState();
