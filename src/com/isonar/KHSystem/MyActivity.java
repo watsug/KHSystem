@@ -147,7 +147,7 @@ public class MyActivity extends Activity implements MediaPlayer.OnCompletionList
                 songsAdapter = new SongsListAdapter(MyActivity.this,R.layout.songs_list,songBase.getSongs());
                 songsList.setAdapter(songsAdapter);
             } catch (Exception ex) {
-                showError("c1" + ex.toString());
+                showError("c1: " + ex.toString());
             }
 
             try {
@@ -330,6 +330,9 @@ public class MyActivity extends Activity implements MediaPlayer.OnCompletionList
 
     private void playSound(boolean play) {
         try {
+            if (null == songsAdapter) {
+                return;
+            }
             SongItem song = songsAdapter.getSelectedSong();
             if (play && null != song) {
                 mediaPlayer.setVolume(0.7f,0.7f);
