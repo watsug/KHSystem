@@ -2,15 +2,19 @@ package com.isonar.KHSystem;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.hardware.usb.UsbManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.*;
@@ -21,6 +25,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class MyActivity extends Activity implements MediaPlayer.OnCompletionListener {
+    private final String TAG = "KHMActivity";
+
     private Button btnSong1;
     private Button btnSong2;
     private Button btnSong3;
@@ -46,6 +52,7 @@ public class MyActivity extends Activity implements MediaPlayer.OnCompletionList
     private final Handler handler = new Handler();
 
     private boolean songStarted = false;
+    private KHMDevice khmDev;
 
     /**
      * Called when the activity is first created.
@@ -83,6 +90,14 @@ public class MyActivity extends Activity implements MediaPlayer.OnCompletionList
 
         setContentView(R.layout.main);
         setUpView();
+
+        try {
+            // Get UsbManager from Android.
+            UsbManager mgr = (UsbManager) getSystemService(Context.USB_SERVICE);
+            khmDev = new KHMDevice(mgr);
+        } catch (Exception ex) {
+            Log.w(TAG, ex.getMessage(), ex);
+        }
 
         myTimer = new Timer();
         myTimer.scheduleAtFixedRate(new TimerTask() {
@@ -147,7 +162,7 @@ public class MyActivity extends Activity implements MediaPlayer.OnCompletionList
                 songsAdapter = new SongsListAdapter(MyActivity.this,R.layout.songs_list,songBase.getSongs());
                 songsList.setAdapter(songsAdapter);
             } catch (Exception ex) {
-                showError("c1: " + ex.toString());
+                Log.w(TAG, ex.getMessage(), ex);
             }
 
             try {
@@ -164,7 +179,7 @@ public class MyActivity extends Activity implements MediaPlayer.OnCompletionList
                     }
                 });
             } catch (Exception ex) {
-                showError("l1: " + ex.toString());
+                Log.w(TAG, ex.getMessage(), ex);
             }
 
             btnSong1.setLongClickable(true);
@@ -273,6 +288,36 @@ public class MyActivity extends Activity implements MediaPlayer.OnCompletionList
                 }
             });
 
+            btnElevatorUp.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    switch (event.getAction()) {
+                        case MotionEvent.ACTION_DOWN:
+                            elevatorCmd = 1;
+                            break;
+                        case MotionEvent.ACTION_UP:
+                            elevatorCmd = 0;
+                            break;
+                    }
+                    return true;
+                }
+            });
+
+            btnElevatorDown.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    switch (event.getAction()) {
+                        case MotionEvent.ACTION_DOWN:
+                            elevatorCmd = 2;
+                            break;
+                        case MotionEvent.ACTION_UP:
+                            elevatorCmd = 0;
+                            break;
+                    }
+                    return true;
+                }
+            });
+
             mediaPlayer.setOnCompletionListener(this);
 
             refreshStartButton();
@@ -280,7 +325,7 @@ public class MyActivity extends Activity implements MediaPlayer.OnCompletionList
             refreshPlayButton();
             refreshRepeatButton();
         } catch (Exception ex) {
-            showError("c2" + ex.toString());
+            Log.e(TAG, ex.getMessage(), ex);
         }
     }
 
@@ -370,6 +415,26 @@ public class MyActivity extends Activity implements MediaPlayer.OnCompletionList
         btnRepeat.setImageResource(lighted ? R.drawable.repeat : R.drawable.repeat_disabled);
     }
 
+    private int elevatorCmd = 0;
+    private void refreshUsb() {
+        try {
+            if (!khmDev.active()) {
+                boolean result = khmDev.initialize();
+                btnElevatorUp.setEnabled(result);
+                btnElevatorDown.setEnabled(result);
+                btnTimerStart.setEnabled(result);
+                btnTimer5Min.setEnabled(result);
+            }
+        } catch (Exception ex) {
+        }
+        try {
+            if (null != khmDev && khmDev.active()) {
+                khmDev.khmMessage(0, elevatorCmd);
+            }
+        } catch (Exception ex) {
+        }
+    }
+
     private int timerCounter = 0;
     private void TimerMethod() {
         //This method is called directly by the timer
@@ -385,6 +450,7 @@ public class MyActivity extends Activity implements MediaPlayer.OnCompletionList
             refresh5MinButton();
             refreshPlayButton();
             refreshRepeatButton();
+            refreshUsb();
         }
     };
 
