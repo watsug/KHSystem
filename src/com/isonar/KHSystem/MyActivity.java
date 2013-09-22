@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.hardware.usb.UsbManager;
 import android.media.MediaPlayer;
@@ -452,9 +453,16 @@ public class MyActivity extends Activity implements MediaPlayer.OnCompletionList
         try {
             if (!khmDev.active()) {
                 boolean result = khmDev.initialize();
-                btnElevatorUp.setEnabled(result);
-                btnElevatorDown.setEnabled(result);
-                btnTimerStart.setEnabled(result);
+                int bkColor = result ? 0xff37783E : 0xff783a3b;
+
+                View v = this.findViewById(R.id.elevatorFrame);
+                if (null != v) {
+                    v.setBackgroundColor(bkColor);
+                }
+                v = this.findViewById(R.id.timerFrame);
+                if (null != v) {
+                    v.setBackgroundColor(bkColor);
+                }
                 btnTimer5Min.setEnabled(false);
             }
         } catch (Exception ex) {

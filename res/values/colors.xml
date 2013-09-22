@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="songsListBackground">#06396a</color>
+    <color name="interfaceBackground">#37783E</color>
+    <color name="noInterfaceBackground">#783a3b</color>
 </resources>

@@ -120,7 +120,7 @@
                 android:layout_height="230dp"
                 android:layout_alignParentTop="false"
                 android:id="@+id/timerFrame" android:layout_alignParentLeft="false"
-                android:layout_toRightOf="@+id/space1" android:background="#0d7842">
+                android:layout_toRightOf="@+id/space1" android:background="#37783e">
             <Button
                     android:layout_width="170dp"
                     android:layout_height="100dp"
