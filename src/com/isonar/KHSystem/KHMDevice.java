@@ -16,6 +16,18 @@ public class KHMDevice {
     private final int DIGITAL_MESSAGE   = 0x90; // send data for a digital port
 
 
+    public static final int MSG_ELEVATOR = 0x00;
+    public static final int CMD_ELEVATOR_UP = 0x01;
+    public static final int CMD_ELEVATOR_DOWN = 0x02;
+    public static final int CMD_ELEVATOR_STOP = 0x00;
+
+    public static final int MSG_TIMER = 0x01;
+    public static final int CMD_TIMER_STOP = 0x00;
+    public static final int CMD_TIMER_START = 0x01;
+    public static final int CMD_TIMER_RESTART = 0x02;
+    public static final int CMD_TIMER_5M_ON = 0x03;
+    public static final int CMD_TIMER_5M_OFF = 0x04;
+
     private UsbManager usbMgr;
     public KHMDevice(UsbManager usbMgr) {
         this.usbMgr = usbMgr;
@@ -53,14 +65,7 @@ public class KHMDevice {
     }
 
     public boolean active() {
-        try {
-            if (null == driver) return false;
-            android.hardware.usb.UsbDevice dev = driver.getDevice();
-            return usbDeviceId == dev.getDeviceId();
-        } catch (Exception ex) {
-            Log.w(TAG, ex.getMessage(), ex);
-            return false;
-        }
+        return null != driver;
     }
 
     public boolean release() {
@@ -76,6 +81,14 @@ public class KHMDevice {
         }
     }
 
+    public boolean timer(int value) {
+        return khmMessage(MSG_TIMER, value);
+    }
+
+    public boolean elevator(int value) {
+        return khmMessage(MSG_ELEVATOR, value);
+    }
+
     public boolean khmMessage(int cmd, int value) {
         try {
             byte[] message = new byte[3];
@@ -88,6 +101,10 @@ public class KHMDevice {
             return written == message.length;
         } catch (Exception ex) {
             Log.e(TAG, ex.getMessage(), ex);
+            try {
+                driver.close();
+            } catch (IOException e) {}
+            driver = null;
             return false;
         }
     }

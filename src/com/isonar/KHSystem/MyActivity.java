@@ -236,14 +236,7 @@ public class MyActivity extends Activity implements MediaPlayer.OnCompletionList
 
             btnTimerStart.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-                    if (!started) {
-                        khmTimer.setBase(SystemClock.elapsedRealtime());
-                        khmTimer.start();
-                    } else {
-                        khmTimer.stop();
-                    }
-                    started = !started;
-                    refreshStartButton();
+                    onTimerButton();
                 }
             });
 
@@ -293,10 +286,10 @@ public class MyActivity extends Activity implements MediaPlayer.OnCompletionList
                 public boolean onTouch(View v, MotionEvent event) {
                     switch (event.getAction()) {
                         case MotionEvent.ACTION_DOWN:
-                            elevatorCmd = 1;
+                            elevatorCmd = KHMDevice.CMD_ELEVATOR_UP;
                             break;
                         case MotionEvent.ACTION_UP:
-                            elevatorCmd = 0;
+                            elevatorCmd = KHMDevice.CMD_ELEVATOR_STOP;
                             break;
                     }
                     return true;
@@ -308,10 +301,10 @@ public class MyActivity extends Activity implements MediaPlayer.OnCompletionList
                 public boolean onTouch(View v, MotionEvent event) {
                     switch (event.getAction()) {
                         case MotionEvent.ACTION_DOWN:
-                            elevatorCmd = 2;
+                            elevatorCmd = KHMDevice.CMD_ELEVATOR_DOWN;
                             break;
                         case MotionEvent.ACTION_UP:
-                            elevatorCmd = 0;
+                            elevatorCmd = KHMDevice.CMD_ELEVATOR_STOP;
                             break;
                     }
                     return true;
@@ -324,8 +317,28 @@ public class MyActivity extends Activity implements MediaPlayer.OnCompletionList
             refresh5MinButton();
             refreshPlayButton();
             refreshRepeatButton();
+            tryReinitializeUsb();
+            onTimerButton();
+
         } catch (Exception ex) {
             Log.e(TAG, ex.getMessage(), ex);
+        }
+    }
+
+    private void onTimerButton() {
+        try {
+            if (!started) {
+                khmTimer.setBase(SystemClock.elapsedRealtime());
+                khmTimer.start();
+                startTimer(true);
+            } else {
+                khmTimer.stop();
+                startTimer(false);
+            }
+            started = !started;
+            refreshStartButton();
+        } catch (Exception ex) {
+            Log.wtf(TAG, ex);
         }
     }
 
@@ -398,6 +411,15 @@ public class MyActivity extends Activity implements MediaPlayer.OnCompletionList
         }
     }
 
+    private void startTimer(boolean start) {
+        try {
+            if (null != khmDev && khmDev.active()) {
+                khmDev.timer(start ? KHMDevice.CMD_TIMER_RESTART : KHMDevice.CMD_TIMER_STOP);
+            }
+        } catch (Exception ex) {
+        }
+    }
+
     private void refreshPlayButton() {
         boolean play = null == mediaPlayer || !mediaPlayer.isPlaying();
         btnPlay.setImageResource(play ? R.drawable.button_play : R.drawable.button_stop);
@@ -417,19 +439,23 @@ public class MyActivity extends Activity implements MediaPlayer.OnCompletionList
 
     private int elevatorCmd = 0;
     private void refreshUsb() {
+        tryReinitializeUsb();
+        try {
+            if (null != khmDev && khmDev.active()) {
+                khmDev.elevator(elevatorCmd);
+            }
+        } catch (Exception ex) {
+        }
+    }
+
+    private void tryReinitializeUsb() {
         try {
             if (!khmDev.active()) {
                 boolean result = khmDev.initialize();
                 btnElevatorUp.setEnabled(result);
                 btnElevatorDown.setEnabled(result);
                 btnTimerStart.setEnabled(result);
-                btnTimer5Min.setEnabled(result);
-            }
-        } catch (Exception ex) {
-        }
-        try {
-            if (null != khmDev && khmDev.active()) {
-                khmDev.khmMessage(0, elevatorCmd);
+                btnTimer5Min.setEnabled(false);
             }
         } catch (Exception ex) {
         }
