@@ -10,7 +10,7 @@
             android:orientation="vertical"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent" android:id="@+id/playerFrame" android:background="@color/songsListBackground"
-            android:layout_toLeftOf="@+id/space2">
+            android:layout_toLeftOf="@+id/space1">
         <SeekBar
                 android:layout_width="fill_parent"
                 android:layout_height="30dp"
@@ -77,31 +77,6 @@
                     android:layout_marginTop="4dp"/>
         </LinearLayout>
     </LinearLayout>
-    <Space
-            android:layout_width="20dp"
-            android:layout_height="fill_parent"
-            android:id="@+id/space2" android:layout_toLeftOf="@+id/recorderFrame"/>
-    <FrameLayout
-            android:layout_width="150dp"
-            android:layout_height="fill_parent" android:background="#999b9a" android:id="@+id/recorderFrame"
-            android:measureAllChildren="false" android:layout_toLeftOf="@+id/space1">
-        <ImageButton
-                android:layout_width="140dp"
-                android:layout_height="140dp"
-                android:id="@+id/folderButton" android:layout_gravity="center_horizontal|bottom"
-                android:src="@drawable/folder_disabled" android:visibility="visible" android:baselineAlignBottom="false"
-                />
-        <ImageButton
-                android:layout_width="140dp"
-                android:layout_height="140dp"
-                android:id="@+id/recordButton" android:layout_gravity="center_horizontal|top"
-                android:src="@drawable/record_disabled"/>
-        <ImageButton
-                android:layout_width="140dp"
-                android:layout_height="140dp"
-                android:id="@+id/pauseRecordButton" android:layout_gravity="center"
-                android:focusableInTouchMode="false" android:src="@drawable/record_stop_disabled"/>
-    </FrameLayout>
     <Space
             android:layout_width="20dp"
             android:layout_height="fill_parent"
