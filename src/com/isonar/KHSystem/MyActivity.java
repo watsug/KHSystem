@@ -50,6 +50,7 @@ public class MyActivity extends Activity implements MediaPlayer.OnCompletionList
     private boolean started = false;
     private boolean fiveMinutEnabled = false;
     private Timer myTimer;
+    private Timer myTimer2;
     private final Handler handler = new Handler();
 
     private boolean songStarted = false;
@@ -107,6 +108,13 @@ public class MyActivity extends Activity implements MediaPlayer.OnCompletionList
                 TimerMethod();
             }
         }, 0, 500);
+        myTimer2 = new Timer();
+        myTimer2.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                TimerMethod2();
+            }
+        }, 0, 150);
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
@@ -416,6 +424,8 @@ public class MyActivity extends Activity implements MediaPlayer.OnCompletionList
         try {
             if (null != khmDev && khmDev.active()) {
                 khmDev.timer(start ? KHMDevice.CMD_TIMER_RESTART : KHMDevice.CMD_TIMER_STOP);
+                khmDev.timer(start ? KHMDevice.CMD_TIMER_RESTART : KHMDevice.CMD_TIMER_STOP);
+                khmDev.timer(start ? KHMDevice.CMD_TIMER_RESTART : KHMDevice.CMD_TIMER_STOP);
             }
         } catch (Exception ex) {
         }
@@ -478,12 +488,20 @@ public class MyActivity extends Activity implements MediaPlayer.OnCompletionList
         //through the runOnUiThread method.
         this.runOnUiThread(Timer_Tick);
     }
+    private void TimerMethod2() {
+        this.runOnUiThread(Timer_Tick2);
+    }
 
     private Runnable Timer_Tick = new Runnable() {
         public void run() {
             refresh5MinButton();
             refreshPlayButton();
             refreshRepeatButton();
+            refreshUsb();
+        }
+    };
+    private Runnable Timer_Tick2 = new Runnable() {
+        public void run() {
             refreshUsb();
         }
     };
