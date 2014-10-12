@@ -1,10 +1,14 @@
 package com.isonar.KHSystem;
 
+import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbManager;
 import android.util.Log;
 
 import java.io.IOException;
+import java.util.List;
+
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
+import com.hoho.android.usbserial.driver.UsbSerialPort;
 import com.hoho.android.usbserial.driver.UsbSerialProber;
 
 /**
@@ -32,30 +36,37 @@ public class KHMDevice {
     public KHMDevice(UsbManager usbMgr) {
         this.usbMgr = usbMgr;
     }
-
-    private UsbSerialDriver driver = null;
-    private int usbDeviceId = -1;
+    private UsbSerialPort port = null;
 
     public boolean initialize() {
         try {
             // Find the first available driver.
-            driver = UsbSerialProber.acquire(usbMgr);
-            if (null == driver) {
+            List<UsbSerialDriver> drivers = UsbSerialProber.getDefaultProber().findAllDrivers(usbMgr);
+            if (drivers.isEmpty()) return false;
+            // TODO: more devices???
+            List<UsbSerialPort> ports = drivers.get(0).getPorts();
+            if (ports.isEmpty()) return false;
+            port = ports.get(0);
+            if (null == port) {
                 return false;
             }
+
+            UsbDeviceConnection connection = usbMgr.openDevice(port.getDriver().getDevice());
+            if (connection == null) return false;
+
             try {
-                usbDeviceId = driver.getDevice().getDeviceId();
-                driver.open();
-                driver.setBaudRate(115200);
+                //usbDeviceId = port. driver.getDevice().getDeviceId();
+                port.open(connection);
+                port.setParameters(115200, 8, UsbSerialPort.STOPBITS_1, UsbSerialPort.PARITY_NONE);
 
                 byte buffer[] = new byte[16];
-                int numBytesRead = driver.read(buffer, 1000);
+                int numBytesRead = port.read(buffer, 1000);
                 Log.d(TAG, "Read " + numBytesRead + " bytes.");
                 return true;
             } catch (IOException e) {
                 // Deal with error.
                 Log.e(TAG, e.getMessage(), e);
-                driver = null; usbDeviceId = -1;
+                port = null;
                 return false;
             }
         } catch (Exception e) {
@@ -65,19 +76,19 @@ public class KHMDevice {
     }
 
     public boolean active() {
-        return null != driver;
+        return null != port;
     }
 
     public boolean release() {
         try {
-            if (null == driver) return true;
-            driver.close();
+            if (null == port) return true;
+            port.close();
             return true;
         } catch (Exception ex) {
             Log.e(TAG, ex.getMessage(), ex);
             return false;
         } finally {
-            driver = null;
+            port = null;
         }
     }
 
@@ -97,14 +108,14 @@ public class KHMDevice {
             message[1] = (byte)(value & 0x7F);
             message[2] = (byte)(value >> 7);
 
-            int written = driver.write(message, 100);
+            int written = port.write(message, 100);
             return written == message.length;
         } catch (Exception ex) {
             Log.e(TAG, ex.getMessage(), ex);
             try {
-                driver.close();
+                port.close();
             } catch (IOException e) {}
-            driver = null;
+            port = null;
             return false;
         }
     }
