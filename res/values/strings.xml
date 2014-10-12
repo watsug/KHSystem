@@ -14,4 +14,7 @@
     <string name="warnOnExit">Are you sure you want to exit?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="play">Play</string>
+    <string name="repeat">Repeat</string>
+    <string name="timer_value">0:00:01</string>
 </resources>

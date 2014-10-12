@@ -33,48 +33,43 @@
                             android:layout_height="75dp"
                             android:text="@string/song_1"
                             android:id="@+id/btnSong1"
-                            android:textSize="30dp"
-                            android:layout_alignParentLeft="false"
-                            android:layout_alignTop="@+id/listView" android:layout_gravity="center|top"/>
+                            android:textSize="30sp"
+                            android:layout_gravity="top|center"/>
                     <Button
                             android:layout_width="140dp"
                             android:layout_height="75dp"
                             android:text="@string/song_2"
                             android:id="@+id/btnSong2"
-                            android:textSize="30dp"
-                            android:layout_alignLeft="@+id/btnSong1" android:layout_below="@+id/btnSong1"
+                            android:textSize="30sp"
                             android:layout_gravity="center"/>
                     <Button
                             android:layout_width="140dp"
                             android:layout_height="75dp"
                             android:text="@string/song_3"
                             android:id="@+id/btnSong3"
-                            android:textSize="30dp"
-                            android:layout_alignLeft="@+id/btnSong1" android:layout_below="@+id/btnSong2"
+                            android:textSize="30sp"
                             android:layout_gravity="center|bottom"/>
                 </FrameLayout>
                 <ImageButton
                         android:layout_width="140dp"
                         android:layout_height="125dp"
                         android:id="@+id/btnPlay"
-                        android:layout_alignLeft="@+id/btnSong1" android:layout_alignParentTop="true"
-                        android:layout_alignRight="@+id/btnSong1"
-                        android:layout_alignBottom="@+id/listView"
                         android:src="@drawable/button_play" android:layout_gravity="center_horizontal"
-                        android:layout_marginTop="10dp" android:longClickable="false"/>
+                        android:layout_marginTop="10dp" android:longClickable="false"
+                        android:contentDescription="@string/play"/>
                 <ImageButton
                         android:layout_width="140dp"
                         android:layout_height="125dp"
                         android:id="@+id/btnRepeat" android:layout_gravity="center_horizontal|bottom"
                         android:src="@drawable/repeat_disabled" android:layout_marginTop="10dp"
-                        />
+                        android:contentDescription="@string/repeat"/>
             </LinearLayout>
             <ListView
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
                     android:id="@+id/listView"
                     android:choiceMode="singleChoice"
-                    android:layout_marginTop="4dp"/>
+                    android:layout_marginTop="4dp" android:clickable="false"/>
         </LinearLayout>
     </LinearLayout>
     <Space
@@ -88,40 +83,37 @@
         <Chronometer
                 android:layout_width="fill_parent"
                 android:layout_height="80dp"
-                android:id="@+id/nonstopTimer" android:textSize="60dp" android:gravity="center_vertical|center_horizontal"
+                android:id="@+id/nonstopTimer" android:textSize="60sp" android:gravity="center_vertical|center_horizontal"
                 android:textColor="#26ff25" android:background="#686868"/>
         <FrameLayout
                 android:layout_width="fill_parent"
                 android:layout_height="230dp"
-                android:layout_alignParentTop="false"
-                android:id="@+id/timerFrame" android:layout_alignParentLeft="false"
-                android:layout_toRightOf="@+id/space1" android:background="#37783e">
+                android:id="@+id/timerFrame"
+                android:background="#37783e">
             <Button
                     android:layout_width="170dp"
                     android:layout_height="100dp"
                     android:text="@string/start"
                     android:id="@+id/btnTimerStart"
-                    android:textSize="40dp"
-                    android:layout_below="@+id/khmTimer" android:layout_alignLeft="@+id/khmTimer"
+                    android:textSize="40sp"
                     android:layout_gravity="left|bottom"/>
             <Button android:layout_width="170dp" android:layout_height="100dp" android:text="@string/fiveMin" android:id="@+id/btnTimer5Min"
-                    android:textSize="40dp"
-                    android:layout_alignRight="@+id/khmTimer" android:layout_alignTop="@+id/btnTimerStart"
+                    android:textSize="40sp"
                     android:layout_gravity="right|bottom"/>
             <Chronometer
                     android:layout_width="match_parent"
                     android:layout_height="130dp"
                     android:id="@+id/khmTimer"
-                    android:gravity="center_vertical|center_horizontal" android:textSize="100dp"
+                    android:gravity="center_vertical|center_horizontal" android:textSize="100sp"
                     android:enabled="true"
-                    android:text="0:00:01" android:layout_alignParentLeft="true"
-                    android:layout_alignBaseline="@+id/btnSong2" android:layout_gravity="center_horizontal|top"/>
+                    android:text="@string/timer_value"
+                    android:layout_gravity="center_horizontal|top"/>
         </FrameLayout>
         <FrameLayout
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:id="@+id/elevatorFrame" android:layout_alignLeft="@+id/timerFrame"
-                android:layout_below="@+id/timerFrame" android:background="#5f8308">
+                android:id="@+id/elevatorFrame"
+                android:background="#5f8308">
             <ImageButton
                     android:layout_width="170dp"
                     android:layout_height="wrap_content"
