@@ -28,8 +28,11 @@ public class ElevatorCmd {
 
     public boolean resend(boolean decrement)
     {
-        boolean ret = counter > 0;
-        counter --;
-        return ret;
+        if (counter > 0)
+        {
+            counter --;
+            return true;
+        }
+        return false;
     }
 }

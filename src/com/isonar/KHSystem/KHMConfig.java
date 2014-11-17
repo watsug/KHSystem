@@ -22,6 +22,13 @@ public class KHMConfig {
         return new File(Environment.getExternalStorageDirectory(),"KHM");
     }
 
+    public static boolean isStorageMounted()
+    {
+        String state = Environment.getExternalStorageState();
+        return Environment.MEDIA_MOUNTED.equals(state) ||
+            Environment.MEDIA_MOUNTED_READ_ONLY.equals(state);
+    }
+
     public static boolean existsKHMDir() {
         try {
             File file = getKHMDir();

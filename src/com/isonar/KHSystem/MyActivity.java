@@ -39,7 +39,6 @@ public class MyActivity extends Activity implements MediaPlayer.OnCompletionList
     private ImageButton btnElevatorDown;
     private Chronometer khmTimer;
     private Chronometer nonstopTimer;
-    private TextView timerView;
     ListView songsList;
     SongBase songBase = new SongBase(null);
     private SongsListAdapter songsAdapter = null;
@@ -78,10 +77,10 @@ public class MyActivity extends Activity implements MediaPlayer.OnCompletionList
             DisplayMetrics metrics = res.getDisplayMetrics();
             if (null != metrics) {
                 getWindowManager().getDefaultDisplay().getMetrics(metrics);
-                String tmp = String.format("density: %f\n", metrics.density);
-                tmp = tmp + String.format("densityDpi: %d\n", metrics.densityDpi);
-                tmp = tmp + String.format("widthPixels: %d\n", metrics.widthPixels);
-                tmp = tmp + String.format("scaledDensity: %f\n", metrics.scaledDensity);
+                //String tmp = String.format("density: %f\n", metrics.density);
+                //tmp = tmp + String.format("densityDpi: %d\n", metrics.densityDpi);
+                //tmp = tmp + String.format("widthPixels: %d\n", metrics.widthPixels);
+                //tmp = tmp + String.format("scaledDensity: %f\n", metrics.scaledDensity);
                 //showError("metrics: \n" + tmp);
                 metrics.density = (float)densityDpi/160.0f;
                 metrics.densityDpi = densityDpi;
@@ -290,6 +289,7 @@ public class MyActivity extends Activity implements MediaPlayer.OnCompletionList
                 }
             });
 
+            /*
             btnElevatorUp.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
@@ -318,7 +318,7 @@ public class MyActivity extends Activity implements MediaPlayer.OnCompletionList
                     }
                     return true;
                 }
-            });
+            });*/
 
             mediaPlayer.setOnCompletionListener(this);
 
@@ -452,6 +452,13 @@ public class MyActivity extends Activity implements MediaPlayer.OnCompletionList
     private void refreshUsb() {
         tryReinitializeUsb();
         try {
+            if (btnElevatorDown.isPressed()) {
+                elevatorCmd.setCmd(KHMDevice.CMD_ELEVATOR_DOWN, true);
+            } else if (btnElevatorUp.isPressed()) {
+                elevatorCmd.setCmd(KHMDevice.CMD_ELEVATOR_UP, true);
+            } else {
+                elevatorCmd.setCmd(KHMDevice.CMD_ELEVATOR_STOP, true);
+            }
             if (null != khmDev && khmDev.active()) {
                 if (elevatorCmd.resend(true))
                 {
