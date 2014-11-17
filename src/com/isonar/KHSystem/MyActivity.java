@@ -107,7 +107,7 @@ public class MyActivity extends Activity implements MediaPlayer.OnCompletionList
             public void run() {
                 TimerMethod();
             }
-        }, 0, 500);
+        }, 0, 200);
         myTimer2 = new Timer();
         myTimer2.scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -295,10 +295,10 @@ public class MyActivity extends Activity implements MediaPlayer.OnCompletionList
                 public boolean onTouch(View v, MotionEvent event) {
                     switch (event.getAction()) {
                         case MotionEvent.ACTION_DOWN:
-                            elevatorCmd = KHMDevice.CMD_ELEVATOR_UP;
+                            elevatorCmd.setCmd(KHMDevice.CMD_ELEVATOR_UP, true);
                             break;
                         case MotionEvent.ACTION_UP:
-                            elevatorCmd = KHMDevice.CMD_ELEVATOR_STOP;
+                            elevatorCmd.setCmd(KHMDevice.CMD_ELEVATOR_STOP, true);
                             break;
                     }
                     return true;
@@ -310,10 +310,10 @@ public class MyActivity extends Activity implements MediaPlayer.OnCompletionList
                 public boolean onTouch(View v, MotionEvent event) {
                     switch (event.getAction()) {
                         case MotionEvent.ACTION_DOWN:
-                            elevatorCmd = KHMDevice.CMD_ELEVATOR_DOWN;
+                            elevatorCmd.setCmd(KHMDevice.CMD_ELEVATOR_DOWN, true);
                             break;
                         case MotionEvent.ACTION_UP:
-                            elevatorCmd = KHMDevice.CMD_ELEVATOR_STOP;
+                            elevatorCmd.setCmd(KHMDevice.CMD_ELEVATOR_STOP, true);
                             break;
                     }
                     return true;
@@ -448,12 +448,15 @@ public class MyActivity extends Activity implements MediaPlayer.OnCompletionList
         btnRepeat.setImageResource(lighted ? R.drawable.repeat : R.drawable.repeat_disabled);
     }
 
-    private int elevatorCmd = 0;
+    private ElevatorCmd elevatorCmd = new ElevatorCmd();
     private void refreshUsb() {
         tryReinitializeUsb();
         try {
             if (null != khmDev && khmDev.active()) {
-                khmDev.elevator(elevatorCmd);
+                if (elevatorCmd.resend(true))
+                {
+                    khmDev.elevator(elevatorCmd.getCmd());
+                }
             }
         } catch (Exception ex) {
         }
