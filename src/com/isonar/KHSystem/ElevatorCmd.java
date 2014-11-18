@@ -4,7 +4,7 @@ package com.isonar.KHSystem;
  * Created by Adam on 2014-11-17.
  */
 public class ElevatorCmd {
-    private final int MAX_RETRY = 3;
+    private final int MAX_RETRY = 5;
     private int prevCmd = 0;
     private int currentCmd = 0;
     private int counter = 0;

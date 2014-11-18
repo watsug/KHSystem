@@ -63,6 +63,11 @@ public class MyActivity extends Activity implements MediaPlayer.OnCompletionList
         super.onCreate(savedInstanceState);
 
         try {
+            int waitCounter = 100;
+            while (!KHMConfig.existsKHMDir() && (waitCounter-- > 0))
+            {
+                Thread.sleep(100);
+            }
             if (!KHMConfig.existsKHMDir()) {
                 File path = KHMConfig.getKHMDir();
                 showError(String.format("Data directory not found: %s!",path.getPath()));
@@ -106,7 +111,7 @@ public class MyActivity extends Activity implements MediaPlayer.OnCompletionList
             public void run() {
                 TimerMethod();
             }
-        }, 0, 200);
+        }, 0, 100);
         myTimer2 = new Timer();
         myTimer2.scheduleAtFixedRate(new TimerTask() {
             @Override
